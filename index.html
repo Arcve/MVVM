@@ -8,9 +8,11 @@
 </head>
 <body>
     <div id="app"  >
-        <input  v-model="c" />
+        <span>a.b&nbsp; </span><input  v-model="a.b" />
+        <span>hello&nbsp; </span><input  v-model="message" />
         <p>This is c: {{c}}</p><br>
-        <p>This a.b: {{a.b}}</p>
+        <p>This a.b: {{a.b}}</p><br>
+        <p>This is reversedMessage: {{reversedMessage}}</p><br>
     </div>
 </body>
 <!-- <script src="./observe.js"> </script>
@@ -24,7 +26,13 @@ let vm = new MVVM({
         a : {
             b:1
         },
-        c : 2
+        c : 2,
+        message:'hello'
+    },
+    computed:{
+        reversedMessage: function () {
+            return this.message.split('').reverse().join('')
+        }
     }
 })
 </script>

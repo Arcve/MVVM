@@ -1,0 +1,48 @@
+MVVM 
+开始Observe 它的数据对象
+    data:{
+        a:{
+            b:1
+        },
+        c:2
+    }
+
+    在Observe中修改对象会触发set方法观察新值
+    也就是为每个key设置get和set,Dep.target = null,此时所有的key，都没有订阅(watcher)和发布(notify/update),key的值通过val保存{
+        在Observe(data)中每一层的new dep()都为空还没有addSub，事件池中没有事件，相当于没有人订阅报社的杂志
+    }
+然后编译Compile,在文本结点中选出形如{{　a.b }}式子进行
+    replace:
+        先替换文本中的式子，因为我使用了a.b，说明我在watch它，所以生成一个Watcher(vm, a.b, fn)(事件:在vm上用fn来更新a.b){
+            这时
+            Dep.target = this
+            设置该Watcher的对象和update时用的函数this.vm = vm;this.exp = exp; this.fn = fn(这里是用新值替换旧值)
+            递归触发get方法获取val，使每层的dep都会将该事件加入自己的事件池
+            Dep.target =　null
+
+            也就是a.b所有这条路上的dep都加入的fn这个更新函数
+        }
+    
+修改a.b时{
+    要更新a.b = 2
+    就会出入a, b的set方法(set中先设置val的值(newVal)在调用notify)
+    如果和原值一样，不更新
+    如果不一样，就使用dep.notify()来更新，递归get到val(已经被设置为newVal)
+    update(newVal){
+        调用fn(newVal)更新视图
+    }
+}
+双向绑定{
+    形如<input v-model="a.b"/>
+
+    先找属性(v-model="a.b")
+    此时a.b是data中的一个值，因为没有出现在文本中，而是在结点的属性中，所以没有Watcher;
+    我们给他一个Watcher(vm，a.b, fn),这样可以保证修改a.b数据时会更新视图
+
+    现在我们要修改视图来更新数据
+    怎样修改视图？{
+        触发事件为input
+        当input事件触发时，得到input的值newVal;
+        递归得到a.b的key, key = newVal
+    }
+}

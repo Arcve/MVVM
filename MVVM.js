@@ -141,10 +141,24 @@ Watcher.prototype.update = function(){
     this.fn(val)
 }
 
+
+function initComputed(){
+    let vm  = this
+    let computed = this.$options.computed
+
+    Object.keys(computed).forEach(key =>{
+        Object.defineProperty(vm, key, {
+            get: typeof computed[key] === 'function' ? computed[key] : computed[key].get,
+            set() {}
+        })
+    })
+}
+
+
 function MVVM(options = {}){
     this.$options = options
     let data = this._data = this.$options.data;
-
+    initComputed.call(this);
     observe(data)
     for (let key in data){
         Object.defineProperty(this, key, {
