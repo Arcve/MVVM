@@ -1,3 +1,3 @@
 # MVVM
 A Simple MVVM 
-!(实现原理)[./process.txt]
+[实现原理](./process.txt)
